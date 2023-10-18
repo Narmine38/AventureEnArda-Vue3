@@ -19,6 +19,23 @@ const router = createRouter({
       name: 'connexion',
       component: () => import('../views/Login.vue')
     },
+    {
+      path: '/mon-compte',
+      name: 'mon-compte',
+      component: () => import('../views/MonCompte.vue')
+    },
+    {
+      path: '/administration',
+      name: 'administration',
+      component: () => import('../views/admin/Administration.vue'),
+      children: [
+        {
+          path: 'usersmanagement',  // ceci est relatif à '/administration'
+          name: 'usersmanagement',
+          component: () => import('../views/admin/UsersManagement.vue')
+        },
+      ]
+    },
 
   ]
 })

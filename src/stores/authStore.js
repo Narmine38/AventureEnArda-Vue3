@@ -4,7 +4,8 @@ import api from '@/services/api';
 export const useAuthStore = defineStore('auth', {
     id: 'auth',
     state: () => ({
-        isLoggedIn: !!sessionStorage.getItem('auth_token'), // Vérifie si le token existe pour déterminer l'état de connexion
+        isLoggedIn: !!sessionStorage.getItem('auth_token'),
+        isAdmin: false  // Nouvelle propriété pour vérifier si l'utilisateur est un admin
     }),
     actions: {
         async login(credentials) {
@@ -17,16 +18,20 @@ export const useAuthStore = defineStore('auth', {
 
                 if (response.data.message === 'Logged in successfully.') {
                     this.isLoggedIn = true;
-                    sessionStorage.setItem('auth_token', response.data.token); // Stockage du token dans sessionStorage
+                    sessionStorage.setItem('auth_token', response.data.token);
+
+                    // Vérifiez si l'utilisateur a le rôle 'admin'
+                    if (response.data.roles && response.data.roles.includes('admin')) {
+                        this.isAdmin = true;  // Mettez à jour la propriété isAdmin
+                    }
                 }
             } catch (error) {
                 console.error("Error logging in:", error.response.data);
                 this.isLoggedIn = false;
+                this.isAdmin = false;  // Réinitialisez la propriété isAdmin en cas d'erreur
                 sessionStorage.removeItem('auth_token');
             }
         },
-
-        // ... autres actions (comme logout, etc.)
 
         async logout() {
             // Configurer l'en-tête d'authentification avec le token stocké
@@ -43,6 +48,7 @@ export const useAuthStore = defineStore('auth', {
 
                 if (response.data.message === 'Logged out successfully.') {
                     this.isLoggedIn = false;
+                    this.isAdmin = false;  // Réinitialisez la propriété isAdmin lors de la déconnexion
                     sessionStorage.removeItem('auth_token'); // Suppression du token lors de la déconnexion
                     // Optionnel : rediriger vers la page d'accueil ou de connexion
                     // this.$router.push({ name: 'home' });
@@ -56,6 +62,6 @@ export const useAuthStore = defineStore('auth', {
             }
         }
 
-
+        // ... vous pouvez ajouter d'autres actions si nécessaire
     }
 });

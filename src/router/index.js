@@ -40,6 +40,11 @@ const router = createRouter({
       component: () => import('../views/Activites.vue')
     },
     {
+      path: '/personnages',
+      name: 'personnages',
+      component: () => import('../views/Personnages.vue')
+    },
+    {
       path: '/administration',
       name: 'administration',
       component: () => import('../views/admin/Administration.vue'),
@@ -63,6 +68,11 @@ const router = createRouter({
           path: 'activitiesmanagement',  // ceci est relatif à '/administration'
           name: 'activitiesmanagement',
           component: () => import('../views/admin/ActivitesManagement.vue')
+        },
+        {
+          path: 'charactersmanagement',  // ceci est relatif à '/administration'
+          name: 'charactersmanagement',
+          component: () => import('../views/admin/PersonnageManagement.vue')
         },
       ]
     },

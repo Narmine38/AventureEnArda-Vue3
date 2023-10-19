@@ -12,7 +12,7 @@
           <RouterLink to="/administration/placesmanagement">Gestion des lieux</RouterLink>
         </li>
         <li>
-          <RouterLink to="/administration/accommodations">Gestion des hébergements</RouterLink>
+          <RouterLink to="/administration/accommodationsmanagement">Gestion des hébergements</RouterLink>
         </li>
         <li>
           <RouterLink to="/administration/activities">Gestion des activités</RouterLink>

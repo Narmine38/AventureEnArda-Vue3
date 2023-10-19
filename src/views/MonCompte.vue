@@ -1,123 +1,122 @@
 <template>
-  <form @submit.prevent="updateProfile">
+  <div class="user-management-section">
+    <h2>Mon Compte</h2>
 
-    <label>Nom:
-      <input type="text" v-model="updatedData.name" :placeholder="userData.name || 'Entrez votre nom'" />
-    </label>
-    <label>Email:
-      <input type="email" v-model="updatedData.email" :placeholder="userData.email || 'Entrez votre email'" />
-    </label>
-    <label>Ville:
-      <input type="text" v-model="updatedData.city" :placeholder="userData.city || 'Entrez votre ville'" />
-    </label>
-    <label>Pays:
-      <input type="text" v-model="updatedData.country" :placeholder="userData.country || 'Entrez votre pays'" />
-    </label>
-    <label>Numéro de téléphone:
-      <input type="tel" v-model="updatedData.phone_number" :placeholder="userData.phone_number || 'Entrez votre numéro de téléphone'" />
-    </label>
-    <label>Code postal:
-      <input type="text" v-model="updatedData.postal_code" :placeholder="userData.postal_code || 'Entrez votre code postal'" />
-    </label>
-    <label>Adresse:
-      <input type="text" v-model="updatedData.address" :placeholder="userData.address || 'Entrez votre adresse'" />
-    </label>
-    <button type="submit">Mettre à jour</button>
-    <button @click="archiveProfile">Supprimer mon compte</button>
-  </form>
+    <form @submit.prevent="updateUser">
+      <label>
+        Nom:
+        <input type="text" v-model="editableUser.name" :placeholder="editableUser.name || 'Nom'" required />
+      </label>
 
-    <!-- Bouton pour archiver le profil -->
+      <label>
+        Email:
+        <input type="email" v-model="editableUser.email" :placeholder="editableUser.email || 'Email'" required />
+      </label>
 
+      <label>
+        Adresse:
+        <input type="text" v-model="editableUser.address" :placeholder="editableUser.address || 'Adresse'" required />
+      </label>
 
+      <label>
+        Ville:
+        <input type="text" v-model="editableUser.city" :placeholder="editableUser.city || 'Ville'" required />
+      </label>
+
+      <label>
+        Pays:
+        <input type="text" v-model="editableUser.country" :placeholder="editableUser.country || 'Pays'" required />
+      </label>
+
+      <label>
+        Code postal:
+        <input type="text" v-model="editableUser.postal_code" :placeholder="editableUser.postal_code || 'Code postal'" required />
+      </label>
+
+      <label>
+        Numéro de téléphone:
+        <input type="text" v-model="editableUser.phone_number" :placeholder="editableUser.phone_number || 'Numéro de téléphone'" required />
+      </label>
+
+      <label>
+        Mot de passe (laissez vide pour ne pas changer):
+        <input type="password" v-model="editableUser.password" placeholder="Mot de passe" />
+      </label>
+
+      <button type="submit">Mettre à jour</button>
+    </form>
+
+    <button @click="confirmDeleteAccount">Supprimer mon compte</button>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useUserProfileStore } from '@/stores/userProfileStore';
+import { useAuthStore } from '@/stores/authStore';
+import { ref } from "vue";
 
-const userProfile = useUserProfileStore();
-const userData = userProfile.userData;
+const userProfileStore = useUserProfileStore();
+const authStore = useAuthStore();
+const router = useRouter();
 
-// Les données mises à jour sont stockées ici
-const updatedData = ref({
-  name: userData.name || '',
-  email: userData.email || '',
-  city: userData.city || '',
-  country: userData.country || '',
-  phone_number: userData.phone_number || '',
-  postal_code: userData.postal_code || '',
-  address: userData.address || '',
-  // Ajoutez d'autres champs ici selon vos besoins
-});
+// Utilisation de userData depuis userProfileStore pour initialiser editableUser
+const editableUser = ref({ ...userProfileStore.userData, password: '' });
 
-onMounted(async () => {
-  await userProfile.fetchUserProfile();
-});
-
-const updateProfile = async () => {
-  await userProfile.updateUserProfile(updatedData.value);
-  alert("Profil mis à jour avec succès !");
+const updateUser = async () => {
+  try {
+    await userProfileStore.updateUserProfile(editableUser.value);
+    console.log('User updated successfully!');
+    window.location.reload();
+  } catch (error) {
+    console.error('Error updating user:', error);
+  }
 };
 
-const archiveProfile = async () => {
-  const confirmArchive = confirm("Êtes-vous sûr de vouloir supprimer votre compte ?");
-  if (confirmArchive) {
-    await userProfile.archiveUserProfile();
-    alert("Votre compte a été supprimé avec succès !");
-    // Rediriger vers la page d'accueil ou de connexion
-    // this.$router.push({ name: 'home' });
+const confirmDeleteAccount = () => {
+  if (window.confirm("Êtes-vous sûr de vouloir supprimer votre compte? Cette action est irréversible.")) {
+    archiveAccount();
+  }
+};
+
+const archiveAccount = async () => {
+  try {
+    await userProfileStore.archiveUser(authStore.user.id);
+    console.log('User archived successfully!');
+    await authStore.clearAuthData();
+    await router.push('/connexion');
+    window.location.reload();
+  } catch (error) {
+    console.error('Error archiving account:', error);
   }
 };
 </script>
 
 <style scoped>
-form {
-  max-width: 600px;
-  margin: 2rem auto;
-  padding: 2rem;
-  border: 1px solid #e1e1e1;
-  border-radius: 4px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.user-management-section {
+  padding: 20px;
 }
-
 label {
   display: block;
-  margin-bottom: 1rem;
-  font-weight: bold;
+  margin-bottom: 10px;
 }
-
 input {
+  padding: 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
   width: 100%;
-  padding: 0.5rem;
-  margin-top: 0.5rem;
-  border: 1px solid #e1e1e1;
-  border-radius: 4px;
-  font-size: 1rem;
+  box-sizing: border-box;
 }
-
 button {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  margin-top: 1rem;
-  color: white;
-  background-color: #007BFF;
+  margin-top: 20px;
+  padding: 8px 12px;
   border: none;
-  border-radius: 4px;
+  background-color: #007BFF;
+  color: #ffffff;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.2s;
 }
-
 button:hover {
   background-color: #0056b3;
-}
-
-/* Bouton pour archiver le profil */
-button:last-of-type {
-  margin-top: 2rem;
-  background-color: #dc3545;
-}
-
-button:last-of-type:hover {
-  background-color: #c82333;
 }
 </style>

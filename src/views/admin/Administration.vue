@@ -9,7 +9,7 @@
           <RouterLink to="/administration/usersmanagement">Gestion des utilisateurs</RouterLink>
         </li>
         <li>
-          <RouterLink to="/administration/places">Gestion des lieux</RouterLink>
+          <RouterLink to="/administration/placesmanagement">Gestion des lieux</RouterLink>
         </li>
         <li>
           <RouterLink to="/administration/accommodations">Gestion des hébergements</RouterLink>

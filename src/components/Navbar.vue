@@ -38,7 +38,9 @@ const logout = async () => {
   await useAuthStore().logout();  // Assurez-vous que cette fonction existe dans votre store
   email.value = '';         // Réinitialise les champs email et mot de passe
   password.value = '';
-  await router.push("/connexion"); // Redirection vers la page de connexion
+  await router.push("/connexion");
+  window.location.reload();
+// Redirection vers la page de connexion
 };
 
 

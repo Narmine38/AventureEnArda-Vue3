@@ -2,6 +2,8 @@
   <div class="hebergement">
     <strong>{{ hebergement.nom }}</strong>
     <p>{{ hebergement.description }}</p>
+    <p>Lieu: {{ hebergement.lieu.nom }}</p> <!-- Nouvelle ligne pour afficher le lieu -->
+
     <img :src="hebergement.photo" alt="Photo de {{ hebergement.nom }}" width="200" />
   </div>
 </template>

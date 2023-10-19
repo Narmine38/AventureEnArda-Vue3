@@ -141,7 +141,9 @@ const addHebergement = async () => {
   await hebergementStore.addHebergement(newHebergement.value);
   newHebergement.value = {
     nom: '',
-    description: ''
+    description: '',
+    prix: null,
+    photo: ''
   };
 };
 

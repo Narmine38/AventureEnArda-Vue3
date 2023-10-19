@@ -3,6 +3,7 @@
     <RouterLink to="/middle-earth" class="nav-link">Terre du Milieu</RouterLink>
     <RouterLink to="/destinations" class="nav-link">Destinations</RouterLink>
     <RouterLink to="/heberements" class="nav-link">Hébergements</RouterLink>
+    <RouterLink to="/activites" class="nav-link">Activities</RouterLink>
     <RouterLink to="/personnages" class="nav-link">Personnages</RouterLink>
     <RouterLink to="/histoires" class="nav-link">Histoires</RouterLink>
     <RouterLink to="/conseils" class="nav-link">Conseils de Voyage</RouterLink>

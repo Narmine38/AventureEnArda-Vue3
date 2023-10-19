@@ -15,7 +15,7 @@
           <RouterLink to="/administration/accommodationsmanagement">Gestion des hébergements</RouterLink>
         </li>
         <li>
-          <RouterLink to="/administration/activities">Gestion des activités</RouterLink>
+          <RouterLink to="/administration/activitiesmanagement">Gestion des activités</RouterLink>
         </li>
         <li>
           <RouterLink to="/administration/characters">Gestion des personnages</RouterLink>

@@ -1,24 +1,28 @@
-import { defineStore } from 'pinia';
-import api from '@/services/api';
+import api from "@/services/api";
+import {defineStore} from "pinia";
 
 export const useAuthStore = defineStore('auth', {
     id: 'auth',
+
+    // Initialisation de l'état du store à partir des valeurs stockées dans le sessionStorage.
     state: () => ({
-        isLoggedIn: !!sessionStorage.getItem('auth_token'),
-        isAdmin: sessionStorage.getItem('isAdmin') === 'true', // Récupérer isAdmin du sessionStorage
-        userRole: JSON.parse(sessionStorage.getItem('userRole')) || [] // Récupérer le rôle du sessionStorage
+        isLoggedIn: !!sessionStorage.getItem('auth_token'),  // Vérifie si un token est présent dans le sessionStorage.
+        isAdmin: sessionStorage.getItem('isAdmin') === 'true',  // Convertit la valeur string 'true'/'false' en booléen.
+        userRole: JSON.parse(sessionStorage.getItem('userRole')) || []  // Récupère les rôles de l'utilisateur ou initialise à un tableau vide.
     }),
-    getters: {
-    },
+
     actions: {
+        // Cette méthode sert à configurer l'en-tête d'autorisation pour les requêtes API basées sur le token stocké.
         setAuthorizationHeader() {
-            const token = sessionStorage.getItem('auth_token');
+            const token = this.isLoggedIn ? sessionStorage.getItem('auth_token') : null;
             const role = this.userRole;
 
+            // Si un token est disponible, on l'ajoute à l'en-tête pour l'autorisation.
             if (token) {
                 api.defaults.headers.common['Authorization'] = 'Bearer ' + token;
             }
 
+            // Si l'utilisateur possède le rôle 'admin', un en-tête 'Role' est également ajouté.
             if (role.includes('admin')) {
                 api.defaults.headers.common['Role'] = 'admin';
             }
@@ -26,65 +30,69 @@ export const useAuthStore = defineStore('auth', {
 
         async login(credentials) {
             try {
-                // Récupération du cookie CSRF
+                // Avant de se connecter, nous obtenons un cookie CSRF pour améliorer la sécurité de la requête.
                 await api.get('/sanctum/csrf-cookie');
 
-                // Tentative de connexion
+                // Envoi des identifiants (par ex. email et mot de passe) au serveur pour tentative de connexion.
                 const response = await api.post('/api/login', credentials);
 
+                // Si la connexion est réussie, on stocke les données pertinentes.
                 if (response.data.message === 'Logged in successfully.') {
-                    this.isLoggedIn = true;
-
-                    // Stocker le token, les données de l'utilisateur et le rôle dans sessionStorage
-                    sessionStorage.setItem('auth_token', response.data.token);
-                    sessionStorage.setItem('userData', JSON.stringify(response.data.user));
-                    sessionStorage.setItem('userRole', JSON.stringify(response.data.roles)); // Stocker le rôle ici
-
-                    // Mettre à jour le rôle dans le state
-                    this.userRole = response.data.roles;
-
-                    // Vérifiez si l'utilisateur a le rôle 'admin'
-                    if (this.userRole.includes('admin')) {
-                        this.isAdmin = true;
-                        sessionStorage.setItem('isAdmin', 'true'); // Stocker en tant que chaîne
-                    } else {
-                        this.isAdmin = false;
-                        sessionStorage.setItem('isAdmin', 'false');
-                    }
+                    this.setAuthData(response.data.token, response.data.user, response.data.roles);
                 }
             } catch (error) {
                 console.error("Error logging in:", error.response.data);
-                this.isLoggedIn = false;
-                this.isAdmin = false;
-                sessionStorage.removeItem('auth_token');
-                sessionStorage.removeItem('userData');
-                sessionStorage.removeItem('isAdmin'); // Supprimer isAdmin
-                sessionStorage.removeItem('userRole'); // Supprimer le rôle
+                // En cas d'erreur (par ex. mauvais identifiants), on efface les données d'authentification.
+                this.clearAuthData();
             }
         },
 
         async logout() {
-            this.setAuthorizationHeader(); // Utiliser le header d'authentification ici
+            // On configure l'en-tête d'autorisation pour la requête de déconnexion.
+            this.setAuthorizationHeader();
 
             try {
+                // Envoi d'une requête de déconnexion au serveur.
                 const response = await api.post('/api/logout');
 
+                // Après la déconnexion, on retire l'en-tête d'autorisation.
                 delete api.defaults.headers.common['Authorization'];
 
+                // Si la réponse du serveur indique une déconnexion réussie, on efface les données d'authentification.
                 if (response.data.message === 'Logged out successfully.') {
-                    this.isLoggedIn = false;
-                    this.isAdmin = false;
-                    this.userRole = [];
-                    sessionStorage.removeItem('auth_token');
-                    sessionStorage.removeItem('userData');
-                    sessionStorage.removeItem('isAdmin'); // Supprimer isAdmin
-                    sessionStorage.removeItem('userRole'); // Supprimer le rôle
+                    this.clearAuthData();
                 } else {
                     console.warn("Unexpected response during logout:", response.data.message);
                 }
             } catch (error) {
                 console.error("Error logging out:", error.response.data);
             }
+        },
+
+        // Méthode pour stocker le token, les données de l'utilisateur et ses rôles après une connexion réussie.
+        setAuthData(token, user, roles) {
+            this.isLoggedIn = true;  // Indique que l'utilisateur est connecté.
+            this.userRole = roles;   // Stocke les rôles de l'utilisateur.
+            this.isAdmin = roles.includes('admin');  // Vérifie si l'utilisateur est administrateur.
+
+            // Mise à jour du sessionStorage avec les données reçues.
+            sessionStorage.setItem('auth_token', token);
+            sessionStorage.setItem('userData', JSON.stringify(user));
+            sessionStorage.setItem('userRole', JSON.stringify(roles));
+            sessionStorage.setItem('isAdmin', this.isAdmin ? 'true' : 'false');
+        },
+
+        // Méthode pour effacer les données d'authentification après une déconnexion ou en cas d'erreur.
+        clearAuthData() {
+            this.isLoggedIn = false;  // Indique que l'utilisateur est déconnecté.
+            this.isAdmin = false;     // Réinitialise le statut d'administrateur.
+            this.userRole = [];       // Efface les rôles de l'utilisateur.
+
+            // Effacement des données dans le sessionStorage.
+            sessionStorage.removeItem('auth_token');
+            sessionStorage.removeItem('userData');
+            sessionStorage.removeItem('isAdmin');
+            sessionStorage.removeItem('userRole');
         }
     }
 });

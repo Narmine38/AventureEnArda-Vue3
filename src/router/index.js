@@ -25,6 +25,11 @@ const router = createRouter({
       component: () => import('../views/MonCompte.vue')
     },
     {
+      path: '/destinations',
+      name: 'destinations',
+      component: () => import('../views/Destination.vue')
+    },
+    {
       path: '/administration',
       name: 'administration',
       component: () => import('../views/admin/Administration.vue'),
@@ -33,6 +38,11 @@ const router = createRouter({
           path: 'usersmanagement',  // ceci est relatif à '/administration'
           name: 'usersmanagement',
           component: () => import('../views/admin/UsersManagement.vue')
+        },
+        {
+          path: 'placesmanagement',  // ceci est relatif à '/administration'
+          name: 'placesmanagement',
+          component: () => import('../views/admin/PlacesManagement.vue')
         },
       ]
     },

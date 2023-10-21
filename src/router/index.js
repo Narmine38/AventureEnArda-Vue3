@@ -10,6 +10,10 @@ const router = createRouter({
       component: HomeView
     },
     {
+      path: '/middle-earth',
+      name: 'middle-earth',
+      component: () => import('../views/MiddleEarth.vue')    },
+    {
       path: '/inscription',
       name: 'inscription',
       component: () => import('../views/Register.vue')
@@ -73,6 +77,11 @@ const router = createRouter({
           path: 'charactersmanagement',  // ceci est relatif à '/administration'
           name: 'charactersmanagement',
           component: () => import('../views/admin/PersonnageManagement.vue')
+        },
+        {
+          path: 'reservationsmanagement',  // ceci est relatif à '/administration'
+          name: 'reservationsmanagement',
+          component: () => import('../views/admin/ReservationManagement.vue')
         },
       ]
     },

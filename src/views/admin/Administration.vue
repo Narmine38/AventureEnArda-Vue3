@@ -21,7 +21,7 @@
           <RouterLink to="/administration/charactersmanagement">Gestion des personnages</RouterLink>
         </li>
         <li>
-          <RouterLink to="/administration/reservations">Gestion des réservations</RouterLink>
+          <RouterLink to="/administration/reservationsmanagement">Gestion des réservations</RouterLink>
         </li>
       </ul>
     </nav>

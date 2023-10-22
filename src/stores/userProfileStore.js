@@ -91,6 +91,27 @@ export const useUserProfileStore = defineStore('userProfile', {
                 console.error("Erreur lors de la mise à jour de l'utilisateur:", error.response.data);
                 throw error;
             }
+        },
+        async fetchUserReservations(userId) {
+            this.setAuthorizationHeader();
+            try {
+                const response = await api.get(`/api/reservations/user/${userId}`);
+                if (Array.isArray(response.data)) {
+                    this.userReservations = response.data;
+                    return response.data;
+                } else {
+                    console.warn("Format de données inattendu pour les réservations:", response.data);
+                    return [];
+                }
+            } catch (error) {
+                console.error("Erreur lors de la récupération des réservations de l'utilisateur:", error);
+                if (error.response) {
+                    console.error("Détails de l'erreur:", error.response.data);
+                }
+                return [];
+            }
         }
+
+
     }
 });

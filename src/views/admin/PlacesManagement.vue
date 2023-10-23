@@ -93,7 +93,7 @@
 </template>
 
 <script setup>
-import { usePlacesStore } from '@/stores/placesStore';
+import { usePlacesStore } from '@/stores/PlacesStore';
 import { ref } from 'vue';
 
 const placesStore = usePlacesStore();

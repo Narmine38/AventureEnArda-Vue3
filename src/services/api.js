@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-    baseURL: 'http://localhost:8000', // URL de base de votre API Laravel
+    baseURL: 'https://aventure-en-adra-api-1a54c40aadc3.herokuapp.com', // URL de base de votre API Laravel
     withCredentials: true // Important pour envoyer et recevoir des cookies
 });
 

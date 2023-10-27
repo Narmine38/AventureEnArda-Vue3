@@ -37,7 +37,6 @@ const errors = ref({});
 
 const submitForm = async () => {
   try {
-    await api.get('/sanctum/csrf-cookie'); // Obtenir le cookie CSRF
     const response = await api.post('/api/register', user.value);
     console.log('Inscription réussie:', response.data);
   } catch (error) {

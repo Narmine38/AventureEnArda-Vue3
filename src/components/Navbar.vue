@@ -41,7 +41,7 @@ const logout = async () => {
   email.value = '';         // Réinitialise les champs email et mot de passe
   password.value = '';
   await router.push("/connexion");
-  window.location.reload();
+  //window.location.reload();
 // Redirection vers la page de connexion
 };
 
